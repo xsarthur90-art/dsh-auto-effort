@@ -68,6 +68,8 @@ A line starting with `+ dsh-auto-effort` means it worked.
 
 **After installing or updating the plugin, restart DSH.**
 
+Updating later? [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) says what each version changes — worth a look before you restart DSH.
+
 ## Turning it on and off
 
 **On**

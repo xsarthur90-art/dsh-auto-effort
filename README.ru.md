@@ -68,6 +68,8 @@ plugin_manager install_bundle dsh-auto-effort
 
 **После установки или обновления плагина перезапустите DSH.**
 
+Планируете обновляться позже? В [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) написано, что меняется в каждой версии, — стоит заглянуть перед перезапуском DSH.
+
 ## Включение и выключение
 
 **Включение**

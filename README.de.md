@@ -68,6 +68,8 @@ Eine Zeile, die mit `+ dsh-auto-effort` beginnt, bedeutet, dass es funktioniert 
 
 **Starten Sie DSH nach dem Installieren oder Aktualisieren des Plugins neu.**
 
+Später aktualisieren? In [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) steht, was sich je Version ändert — ein Blick lohnt sich, bevor Sie DSH neu starten.
+
 ## Ein- und Ausschalten
 
 **An**

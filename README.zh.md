@@ -68,6 +68,8 @@ plugin_manager install_bundle dsh-auto-effort
 
 **安装或更新插件后，请重启 DSH。**
 
+以后更新时，先看一眼 [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) 里这版改了什么，再决定什么时候重启 DSH。
+
 ## 开启与关闭
 
 **开启**

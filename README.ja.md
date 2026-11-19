@@ -68,6 +68,8 @@ plugin_manager install_bundle dsh-auto-effort
 
 **プラグインをインストールまたは更新したら、DSH を再起動してください。**
 
+後で更新するときは、[CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) で各バージョンの変更点を確認してから DSH を再起動してください。
+
 ## オンとオフ
 
 **オン**
