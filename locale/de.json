@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Automatischer Aufwand",
+    "description": "Nach jeder Nachricht, die Sie senden, wählt DeepSeek den Denkaufwand: off / low / high / max. Bereits geöffnete Unterhaltungen starten erst nach einem Neustart von DSH; Subagenten werden nie bewertet. Kostet etwa 0,7 s pro Nachricht. Das Ausschalten des Plugins stoppt es vollständig; wählen Sie eine Stufe von Hand, schaltet sich das Plugin ab.",
+    "detail": "docs/DETAIL.de.md"
+  }
+}

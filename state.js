@@ -13,10 +13,19 @@
 let states = new WeakMap()
 
 /**
- * Drop every per-conversation state. Called when the plugin is (re)applied, so a
- * latched breaker or a stale card never survives a reload.
+ * Forget one conversation, or all of them.
+ *
+ * Per-agent, because the host calls this for every conversation that ends —
+ * including every subagent. Wiping the whole map would strand the state of the
+ * conversations that are still open: their wrappers keep reading the old object
+ * while the event handlers read a fresh one, and a latched `running` in the
+ * orphaned copy leaves every later message waiting for a turn that is over.
  */
-export function resetStates() {
+export function resetStates(agent) {
+  if (agent !== undefined && agent !== null) {
+    states.delete(agent)
+    return
+  }
   states = new WeakMap()
 }
 
@@ -82,6 +91,19 @@ export function stateOf(agent, config) {
       held: [],
       /** True while a held message is being handed to the host. */
       flushing: false,
+      /**
+       * True from the moment a user message is accepted until the host has been
+       * handed it. Without it two messages typed seconds apart are judged at the
+       * same time and the slower judgement can move the level of a turn that is
+       * already running.
+       */
+      deciding: false,
+      /**
+       * True while the task card for the turn that just ended is still being
+       * written. The turn is over, but a message must not slip in front of the
+       * queued one in that window.
+       */
+      cardPending: false,
       /** The host's own followup/steer, before this plugin wrapped them. */
       hostDispatch: null,
     }

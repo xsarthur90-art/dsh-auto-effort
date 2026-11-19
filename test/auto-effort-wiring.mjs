@@ -320,4 +320,47 @@ function makeAgent(id, origin, effort = 'high') {
   assert.equal(inserted.at(-1).content[0].text, 'sent right after the stop')
 }
 
+// 17. A turn can end without `turn-stopping` and without aborting the step's
+// signal. The host's own status announcement is the authoritative "there is no
+// turn any more", so a message held behind such a turn must still go out.
+{
+  const ctx = makeCtx({ answer: 'high' })
+  apply(ctx, {})
+  const { agent, inserted } = makeAgent('q')
+  ctx.emit('agent/created', { agent })
+  await agent.followup(userMessage('start a turn'))
+  ctx.emit('agent/pre-step', { agent, step: 1, turn: 1, signal: new AbortController().signal })
+
+  const held = await agent.followup(userMessage('typed while the turn ran'))
+  assert.equal(held, undefined, 'the message waits while the turn runs')
+  assert.equal(inserted.length, 1)
+
+  ctx.emit('agent/status', { agent, status: 'idle' })
+  await tick()
+  assert.equal(inserted.length, 2, 'going idle releases the message')
+  assert.equal(inserted.at(-1).content[0].text, 'typed while the turn ran')
+}
+
+// 18. Two messages typed seconds apart must not be judged at the same time: the
+// second one waits, or the slower judgement moves the level of the turn the
+// first one already started.
+{
+  const ctx = makeCtx({ answer: 'high' })
+  apply(ctx, {})
+  const { agent, selections, inserted } = makeAgent('r')
+  ctx.emit('agent/created', { agent })
+  const first = agent.followup(userMessage('first message'))
+  const second = agent.followup(userMessage('second message'))
+  await Promise.all([first, second])
+  assert.equal(inserted.length, 1, 'the second message did not race the first into the host')
+  assert.equal(inserted[0].content[0].text, 'first message')
+  assert.equal(selections.length, 1, 'only the first message was judged yet')
+
+  ctx.emit('agent/pre-step', { agent, step: 1, turn: 1 })
+  ctx.emit('agent/turn-stopping', { agent, turn: 1 })
+  await tick()
+  assert.equal(inserted.length, 2, 'the second message follows the first turn')
+  assert.equal(inserted.at(-1).content[0].text, 'second message')
+}
+
 console.log('auto-effort wiring checks: OK')

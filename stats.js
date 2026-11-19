@@ -26,14 +26,20 @@ export const PRICES_USD_PER_M = {
 
 const BEIJING = 'Asia/Shanghai'
 
+/**
+ * Built once: `Intl.DateTimeFormat` costs far more to construct than to use, and
+ * this runs for every recorded call and every `/stats` request.
+ */
+const beijingClock = new Intl.DateTimeFormat('en-US', {
+  timeZone: BEIJING,
+  weekday: 'short',
+  hour: '2-digit',
+  hour12: false,
+})
+
 /** @returns {{ weekday: number, hour: number }} in Beijing time. */
 function beijing(now) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: BEIJING,
-    weekday: 'short',
-    hour: '2-digit',
-    hour12: false,
-  }).formatToParts(now)
+  const parts = beijingClock.formatToParts(now)
   const weekdayName = parts.find(part => part.type === 'weekday')?.value ?? 'Mon'
   const hour = Number(parts.find(part => part.type === 'hour')?.value ?? '0')
   const order = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']

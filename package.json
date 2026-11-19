@@ -1,6 +1,6 @@
 {
   "name": "dsh-auto-effort",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Per-turn reasoning effort picker for DeepSeek Harness: keeps a short task card and lets DeepSeek pick off/low/high/max for every message, in the same turn.",
   "type": "module",
   "license": "MIT",
@@ -38,8 +38,8 @@
     ".": "./index.js",
     "./client": "./client.js",
     "./icon": "./icon.svg",
-    "./locale/en": "./locale/en.json",
-    "./locale/zh": "./locale/zh.json"
+    "./locale/*.json": "./locale/*.json",
+    "./locale/*": "./locale/*.json"
   },
   "files": [
     "index.js",
@@ -51,12 +51,11 @@
     "config.js",
     "state.js",
     "icon.svg",
-    "locale/en.json",
-    "locale/zh.json",
+    "locale",
     "cordis.patch.yml",
     "docs",
     "LICENSE",
-    "README.md"
+    "README*.md"
   ],
   "dsh": {
     "bundle": {

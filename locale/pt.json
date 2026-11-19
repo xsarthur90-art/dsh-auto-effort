@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Esforço automático",
+    "description": "Depois de cada mensagem enviada, o DeepSeek escolhe o esforço de raciocínio: off / low / high / max. Conversas já abertas quando o plug-in foi carregado passam a valer depois de reiniciar o DSH; subagentes nunca são avaliados. Acrescenta cerca de 0,7 s por mensagem. Desligar o plug-in o para por completo; escolher um nível à mão desliga o plug-in.",
+    "detail": "docs/DETAIL.pt.md"
+  }
+}

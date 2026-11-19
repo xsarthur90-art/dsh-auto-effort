@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Esfuerzo automático",
+    "description": "Después de cada mensaje que envías, DeepSeek elige el esfuerzo de razonamiento: off / low / high / max. Las conversaciones que ya estaban abiertas cuando se cargó el complemento empiezan tras reiniciar DSH; los subagentes nunca se evalúan. Añade unos 0,7 s por mensaje. Desactivar el complemento lo detiene del todo; elegir un nivel a mano desactiva el complemento.",
+    "detail": "docs/DETAIL.es.md"
+  }
+}

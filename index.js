@@ -423,7 +423,7 @@ async function decide(ctx, agent, state, config, logger, message) {
  * Send one user prompt as a fresh turn: judge it, then hand it to the host.
  * The controller does not await followup/steer, so this promise is fire-and-forget.
  */
-function dispatch(ctx, agent, state, config, logger, method, message, rest) {
+function dispatch(ctx, agent, state, config, logger, method, message, rest, fromQueue = false) {
   const original = state.hostDispatch?.[method]
   const send = () => (typeof original === 'function'
     ? original.call(agent, message, ...rest)
@@ -440,6 +440,14 @@ function dispatch(ctx, agent, state, config, logger, method, message, rest) {
         logger.warn(`could not record the failure: ${recording instanceof Error ? recording.message : String(recording)}`)
       }
     }
+    // A turn may have started while the judge was thinking (another client, a
+    // resumed run). Moving the level then would contradict the thinking blocks
+    // the running turn already sent, so this message waits for the next turn.
+    if (!fromQueue && state.running) {
+      state.held.unshift({ method, message, rest })
+      logger.info('a turn started while judging; the message waits for it to stop')
+      return undefined
+    }
     return send()
   })()
 }
@@ -450,7 +458,10 @@ function dispatch(ctx, agent, state, config, logger, method, message, rest) {
  * did — exactly as if the user had waited and sent it again.
  */
 function flushHeld(ctx, agent, state, config, logger) {
-  if (state.flushing || state.held.length === 0) return
+  // A turn is running, or the card for the last one is still being written, or a
+  // delivery is already in flight: delivering now would put a second message into
+  // a turn whose level was chosen for the first one.
+  if (state.flushing || state.running || state.cardPending || state.held.length === 0) return
   const next = state.held.shift()
   if (next === undefined) return
   // A closed conversation must not be handed a message: `lifetimeSignal` is what
@@ -466,7 +477,7 @@ function flushHeld(ctx, agent, state, config, logger) {
   state.running = true
   logger.info(`delivering a message that waited for the running turn (${state.held.length} left)`)
   Promise.resolve()
-    .then(() => dispatch(ctx, agent, state, config, logger, next.method, next.message, next.rest))
+    .then(() => dispatch(ctx, agent, state, config, logger, next.method, next.message, next.rest, true))
     .catch(error => logger.warn(`a held message could not be delivered: ${error instanceof Error ? error.message : String(error)}`))
     .finally(() => {
       state.flushing = false
@@ -550,8 +561,8 @@ function attach(ctx, agent, config, logger) {
           state.running = false
           logger.info('the turn had already been stopped; sending the message instead of holding it')
         }
-        if (state.running) {
-          if (method === 'steer') {
+        if (state.running || state.deciding || state.cardPending) {
+          if (method === 'steer' && state.running) {
             // "Steer" hands the message to the turn already running, so it keeps
             // that turn's level; nothing to judge and nothing to select.
             logger.info('steer passed through untouched: it keeps the level of the running turn')
@@ -559,13 +570,17 @@ function attach(ctx, agent, config, logger) {
           }
           // "Queue" waits for the running turn to stop; then this message gets
           // its own judgement and its own turn, instead of inheriting a level
-          // picked for the previous message.
+          // picked for the previous message. A message that arrives while the
+          // previous one is still being judged waits here too: two judgements at
+          // once would race to set the level of the same turn.
           state.held.push({ method, message, rest })
           logger.info(`message held until the running turn stops (${state.held.length} waiting)`)
           return undefined
         }
+        state.deciding = true
         return dispatch(ctx, agent, state, config, logger, method, message, rest)
           .catch(error => logger.warn(`the message could not be sent: ${error instanceof Error ? error.message : String(error)}`))
+          .finally(() => { state.deciding = false })
       }
       assigned = agent[method] !== previous
     } catch (error) {
@@ -624,8 +639,10 @@ export function apply(ctx, rawConfig) {
   for (const problem of problems) logger.warn(`incompatible with this DSH build: ${problem}`)
   compatProblems = problems.slice()
   setCompatibility(compatProblems)
-  // A reload must not inherit a latched breaker, a stale card or counters.
-  resetStates()
+  // Deliberately NOT resetStates(): a hot reload leaves the already-attached
+  // conversations running the previous wrapper, and replacing their state objects
+  // here would leave those wrappers and the new event handlers looking at two
+  // different objects — the exact mix-up that makes messages wait forever.
   agentsBySession.clear()
   liveMode = liveValue(config.mode) === 'auto' ? 'auto' : 'manual'
   logger.info(`loaded (default mode=${liveMode}, enabled=${config.enabled}, judge=${config.judgeModel}, timeout=${config.timeoutMs}ms)`)
@@ -649,10 +666,11 @@ export function apply(ctx, rawConfig) {
       }
     }
     if (agent === undefined && agentsBySession.size === 1) agent = agentsBySession.values().next().value
-    // An empty or unknown id still means "the conversation the user is looking
-    // at": there is exactly one menu, and it belongs to the conversation that ran
-    // last. Acting on that beats a dead switch.
-    if (agent === undefined) agent = lastAgent ?? undefined
+    // A missing id means "the conversation the user is looking at", and the menu
+    // belongs to the conversation that ran last. An id that matches nothing is
+    // different: acting on the last conversation then would silently switch the
+    // wrong one, so it is reported instead.
+    if (agent === undefined && want === '') agent = lastAgent ?? undefined
     const state = agent === undefined ? null : stateOf(agent, config)
     if (state === null) {
       logger.warn(`switch: no conversation matches ${want}`)
@@ -846,6 +864,39 @@ export function apply(ctx, rawConfig) {
     }
   })
 
+  // The authoritative answer to "is a turn still running": the host announces
+  // it. `turn-stopping` and the abort signal both miss cases (a turn that dies
+  // quietly, a turn replaced by a restart), and a missed release leaves every
+  // later message waiting behind a turn that will never stop.
+  ctx.on('agent/status', payload => {
+    try {
+      const agent = payload?.agent
+      if (agent === null || typeof agent !== 'object') return
+      const state = stateOf(agent, config)
+      if (payload?.status === 'running') {
+        state.running = true
+        return
+      }
+      if (payload?.status !== 'idle') return
+      const wasRunning = state.running
+      state.running = false
+      const sid = sessionIdOf(agent)
+      if (sid !== '') agentsBySession.set(sid, agent)
+      if (wasRunning && state.held.length > 0) {
+        logger.info(`the conversation went idle; delivering a message that waited (${state.held.length} waiting)`)
+      }
+      setImmediate(() => {
+        try {
+          flushHeld(ctx, agent, state, config, logger)
+        } catch {
+          /* never throw out of a host hook */
+        }
+      })
+    } catch {
+      /* a status change must never break the hook */
+    }
+  })
+
   // The card is rewritten OUTSIDE the user's blocking path: this listener returns
   // before the call finishes, so the turn never waits for it.
   ctx.on('agent/turn-stopping', payload => {
@@ -853,8 +904,8 @@ export function apply(ctx, rawConfig) {
       const agent = payload?.agent
       if (agent === null || typeof agent !== 'object') return
       const state = stateOf(agent, config)
-      state.running = false
       if (!state.auto || state.tripped || state.judgeRoute === null || state.pendingText === '') {
+        state.running = false
         flushHeld(ctx, agent, state, config, logger)
         return
       }
@@ -887,6 +938,9 @@ export function apply(ctx, rawConfig) {
         },
         error => logger.debug(`task card skipped: ${error instanceof Error ? error.message : String(error)}`),
       )
+      // The turn is over, but a queued message must not overtake the card write:
+      // it is judged against the card that describes the turn that just ended.
+      state.cardPending = true
       // The held message is judged against the card written for the turn that
       // just stopped, so give the card writer a chance to land first — but never
       // make the user wait the whole card timeout for it.
@@ -895,7 +949,11 @@ export function apply(ctx, rawConfig) {
         new Promise(resolve => setTimeout(resolve, 3000)),
       ])
         .catch(() => {})
-        .then(() => flushHeld(ctx, agent, state, config, logger))
+        .then(() => {
+          state.cardPending = false
+          state.running = false
+          flushHeld(ctx, agent, state, config, logger)
+        })
     } catch (error) {
       logger.debug(`task card skipped: ${error instanceof Error ? error.message : String(error)}`)
     }

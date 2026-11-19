@@ -31,18 +31,399 @@ window.__ModuleLoader__.load({
     // Both figures are DeepSeek's own list prices, never a conversion of one into
     // the other: the Chinese UI shows the CNY list, the English UI the USD list.
 
-    function isEnglish() {
-      const lang = String(document?.documentElement?.lang ?? navigator?.language ?? 'zh').toLowerCase()
-      return lang.startsWith('en')
+    // ---- wording ----------------------------------------------------------
+    //
+    // Every string the plugin puts on screen, in the eight languages the host
+    // itself ships. The host's `locale` service is the source of truth: it is
+    // read once when the plugin applies and again whenever the user switches
+    // language, so the menu and the plugin page follow the interface language.
+    // Product terms below match the host's own dictionaries; do not retranslate
+    // "Effort", "Settings", "General", "Plugins", "Installed plugins",
+    // "Uninstall", "Model", "Steer" or "Queue" on your own.
+
+    const LANGS = ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']
+
+    const S = {
+      en: {
+        rowLabel: 'Auto-select effort',
+        stoppedFailures: 'Stopped after repeated failures — toggle the switch to retry',
+        stoppedThis: 'Stopped for this conversation',
+        noRun: 'No auto run yet',
+        runOne: 'run',
+        runMany: 'runs',
+        autoRuns: 'Auto runs',
+        state: 'State',
+        active: 'Active',
+        offManual: 'Off (manual)',
+        judgeTime: 'Judging time',
+        cost: 'Cost',
+        conversations: 'Conversations',
+        status: 'Status',
+        working: 'Working',
+        notWorking: 'Not working — update the plugin or DSH',
+        priceWindow: 'Price window',
+        peak: 'Peak',
+        offPeak: 'Off-peak',
+        countedNote: 'Counted since DSH started.',
+        resume: 'Turn it back on',
+        dismiss: 'Dismiss',
+        seconds: ' s',
+        bannerThinking: 'Auto-select effort is paused: this conversation hit an error.',
+        bannerTimeout: 'Auto-select is paused: no answer within 3 seconds.',
+        bannerBusy: 'Auto-select is paused: the service is rate-limiting requests.',
+        bannerServer: 'Auto-select is paused: the service returned an error.',
+        bannerNetwork: 'Auto-select is paused: the network is unreachable.',
+        bannerNoAnswer: 'Auto-select is paused: the reply did not name off/low/high/max.',
+        bannerNotAllowed: 'Auto-select is paused: the answer was a level you turned off.',
+        bannerUnsupported: 'Auto-select is paused: this model does not support that level.',
+        bannerHostDown: 'Auto-select is paused: the model service was unavailable.',
+        bannerUnknown: 'Auto-select is paused: it hit an error.',
+        bannerFailures: 'Auto-select is paused after repeated failures.',
+      },
+      zh: {
+        rowLabel: '自动选择推理等级',
+        stoppedFailures: '连续失败，已停止 —— 关一下开关再打开可恢复',
+        stoppedThis: '本对话已停止',
+        noRun: '还没有自动触发',
+        runOne: '次',
+        runMany: '次',
+        autoRuns: '自动触发次数',
+        state: '状态',
+        active: '自动中',
+        offManual: '已停止（手动）',
+        judgeTime: '判断累计用时',
+        cost: '累计花费',
+        conversations: '涉及对话',
+        status: '状态',
+        working: '正常工作',
+        notWorking: '暂时用不了 —— 请更新插件或 DSH',
+        priceWindow: '当前价格时段',
+        peak: '高峰',
+        offPeak: '空闲',
+        countedNote: '从 DSH 启动起累计。',
+        resume: '重新打开',
+        dismiss: '关闭提示',
+        seconds: ' 秒',
+        bannerThinking: '自动选择推理等级已暂停：这个对话出错了。',
+        bannerTimeout: '自动选择已暂停：3 秒内没等到结果。',
+        bannerBusy: '自动选择已暂停：服务太忙，被限流了。',
+        bannerServer: '自动选择已暂停：服务端临时出错。',
+        bannerNetwork: '自动选择已暂停：网络连不上。',
+        bannerNoAnswer: '自动选择已暂停：模型没按要求回答，缺 off/low/high/max。',
+        bannerNotAllowed: '自动选择已暂停：选出的等级不在你允许的范围里。',
+        bannerUnsupported: '自动选择已暂停：当前模型不支持这个等级。',
+        bannerHostDown: '自动选择已暂停：插件拿不到模型服务。',
+        bannerUnknown: '自动选择已暂停：出错了。',
+        bannerFailures: '自动选择已暂停：连续失败。',
+      },
+      ja: {
+        rowLabel: '強度の自動選択',
+        stoppedFailures: '繰り返し失敗したため停止しました — スイッチを切り替えて再試行してください',
+        stoppedThis: 'この会話では停止しました',
+        noRun: '自動選択はまだ実行されていません',
+        runOne: '回',
+        runMany: '回',
+        autoRuns: '自動実行回数',
+        state: '状態',
+        active: '有効',
+        offManual: '停止（手動）',
+        judgeTime: '判定の累計時間',
+        cost: '累計コスト',
+        conversations: '対象の会話',
+        status: 'ステータス',
+        working: '正常に動作中',
+        notWorking: '動作していません — プラグインまたは DSH を更新してください',
+        priceWindow: '現在の料金時間帯',
+        peak: 'ピーク',
+        offPeak: 'オフピーク',
+        countedNote: 'これまでの合計です（DSH の起動から集計）。',
+        resume: 'もう一度オンにする',
+        dismiss: '閉じる',
+        seconds: ' 秒',
+        bannerThinking: '強度の自動選択を一時停止しました：この会話でエラーが発生しました。',
+        bannerTimeout: '自動選択を一時停止しました：3 秒以内に結果が返りませんでした。',
+        bannerBusy: '自動選択を一時停止しました：サービスが混み合っており、レート制限中です。',
+        bannerServer: '自動選択を一時停止しました：サーバー側で一時的なエラーが発生しました。',
+        bannerNetwork: '自動選択を一時停止しました：ネットワークに接続できません。',
+        bannerNoAnswer: '自動選択を一時停止しました：回答に off/low/high/max が含まれていません。',
+        bannerNotAllowed: '自動選択を一時停止しました：選ばれた強度は許可されていません。',
+        bannerUnsupported: '自動選択を一時停止しました：このモデルはその強度に対応していません。',
+        bannerHostDown: '自動選択を一時停止しました：モデルサービスを取得できません。',
+        bannerUnknown: '自動選択を一時停止しました：エラーが発生しました。',
+        bannerFailures: '自動選択を一時停止しました：連続で失敗しました。',
+      },
+      es: {
+        rowLabel: 'Esfuerzo automático',
+        stoppedFailures: 'Detenido tras varios fallos — cambia el interruptor para reintentar',
+        stoppedThis: 'Detenido en esta conversación',
+        noRun: 'Todavía no se ha activado',
+        runOne: 'ejecución',
+        runMany: 'ejecuciones',
+        autoRuns: 'Ejecuciones automáticas',
+        state: 'Estado',
+        active: 'Activo',
+        offManual: 'Desactivado (manual)',
+        judgeTime: 'Tiempo de selección',
+        cost: 'Coste',
+        conversations: 'Conversaciones',
+        status: 'Estado',
+        working: 'Funcionando',
+        notWorking: 'No funciona — actualiza el complemento o DSH',
+        priceWindow: 'Franja de precio',
+        peak: 'Punta',
+        offPeak: 'Valle',
+        countedNote: 'Contado desde que arrancó DSH.',
+        resume: 'Volver a activarlo',
+        dismiss: 'Descartar',
+        seconds: ' s',
+        bannerThinking: 'Esfuerzo automático en pausa: esta conversación dio un error.',
+        bannerTimeout: 'Selección en pausa: sin respuesta en 3 segundos.',
+        bannerBusy: 'Selección en pausa: el servicio está limitando las peticiones.',
+        bannerServer: 'Selección en pausa: el servicio devolvió un error.',
+        bannerNetwork: 'Selección en pausa: no se puede acceder a la red.',
+        bannerNoAnswer: 'Selección en pausa: la respuesta no indicaba off/low/high/max.',
+        bannerNotAllowed: 'Selección en pausa: la respuesta era un nivel que desactivaste.',
+        bannerUnsupported: 'Selección en pausa: este modelo no admite ese nivel.',
+        bannerHostDown: 'Selección en pausa: el servicio del modelo no estaba disponible.',
+        bannerUnknown: 'Selección en pausa: se produjo un error.',
+        bannerFailures: 'Selección en pausa tras varios fallos.',
+      },
+      fr: {
+        rowLabel: 'Effort automatique',
+        stoppedFailures: "Arrêté après plusieurs échecs — basculez l'interrupteur pour réessayer",
+        stoppedThis: 'Arrêté dans cette conversation',
+        noRun: "Pas encore d'appel automatique",
+        runOne: 'appel',
+        runMany: 'appels',
+        autoRuns: 'Appels automatiques',
+        state: 'État',
+        active: 'Actif',
+        offManual: 'Désactivé (manuel)',
+        judgeTime: "Temps d'évaluation",
+        cost: 'Coût',
+        conversations: 'Conversations',
+        status: 'Statut',
+        working: 'Fonctionne',
+        notWorking: 'Ne fonctionne pas — mettez à jour le plugin ou DSH',
+        priceWindow: 'Plage tarifaire',
+        peak: 'Pointe',
+        offPeak: 'Creux',
+        countedNote: 'Compté depuis le démarrage de DSH.',
+        resume: 'Réactiver',
+        dismiss: 'Fermer',
+        seconds: ' s',
+        bannerThinking: 'Effort automatique en pause : cette conversation a rencontré une erreur.',
+        bannerTimeout: 'Sélection en pause : aucune réponse en 3 secondes.',
+        bannerBusy: 'Sélection en pause : le service limite les requêtes.',
+        bannerServer: 'Sélection en pause : le service a renvoyé une erreur.',
+        bannerNetwork: 'Sélection en pause : le réseau est inaccessible.',
+        bannerNoAnswer: 'Sélection en pause : la réponse ne nommait pas off/low/high/max.',
+        bannerNotAllowed: "Sélection en pause : la réponse correspondait à un niveau que vous avez désactivé.",
+        bannerUnsupported: 'Sélection en pause : ce modèle ne prend pas en charge ce niveau.',
+        bannerHostDown: 'Sélection en pause : le service du modèle était indisponible.',
+        bannerUnknown: 'Sélection en pause : une erreur est survenue.',
+        bannerFailures: 'Sélection en pause après plusieurs échecs.',
+      },
+      de: {
+        rowLabel: 'Aufwand automatisch wählen',
+        stoppedFailures: 'Nach wiederholten Fehlern gestoppt — Schalter umlegen, um es erneut zu versuchen',
+        stoppedThis: 'Für diese Unterhaltung gestoppt',
+        noRun: 'Noch kein automatischer Lauf',
+        runOne: 'Lauf',
+        runMany: 'Läufe',
+        autoRuns: 'Automatische Läufe',
+        state: 'Status',
+        active: 'Aktiv',
+        offManual: 'Aus (manuell)',
+        judgeTime: 'Bewertungszeit',
+        cost: 'Kosten',
+        conversations: 'Unterhaltungen',
+        status: 'Zustand',
+        working: 'Funktioniert',
+        notWorking: 'Funktioniert nicht — Plugin oder DSH aktualisieren',
+        priceWindow: 'Preiszeitfenster',
+        peak: 'Spitze',
+        offPeak: 'Nebenzeit',
+        countedNote: 'Seit dem Start von DSH gezählt.',
+        resume: 'Wieder einschalten',
+        dismiss: 'Schließen',
+        seconds: ' s',
+        bannerThinking: 'Automatischer Aufwand pausiert: In dieser Unterhaltung ist ein Fehler aufgetreten.',
+        bannerTimeout: 'Automatische Auswahl pausiert: keine Antwort innerhalb von 3 Sekunden.',
+        bannerBusy: 'Automatische Auswahl pausiert: Der Dienst begrenzt Anfragen.',
+        bannerServer: 'Automatische Auswahl pausiert: Der Dienst hat einen Fehler zurückgegeben.',
+        bannerNetwork: 'Automatische Auswahl pausiert: Das Netzwerk ist nicht erreichbar.',
+        bannerNoAnswer: 'Automatische Auswahl pausiert: Die Antwort nannte kein off/low/high/max.',
+        bannerNotAllowed: 'Automatische Auswahl pausiert: Die Antwort war eine Stufe, die Sie deaktiviert haben.',
+        bannerUnsupported: 'Automatische Auswahl pausiert: Dieses Modell unterstützt diese Stufe nicht.',
+        bannerHostDown: 'Automatische Auswahl pausiert: Der Modelldienst war nicht verfügbar.',
+        bannerUnknown: 'Automatische Auswahl pausiert: Es ist ein Fehler aufgetreten.',
+        bannerFailures: 'Automatische Auswahl nach wiederholten Fehlern pausiert.',
+      },
+      ru: {
+        rowLabel: 'Автоматическое усилие',
+        stoppedFailures: 'Остановлено после повторных ошибок — переключите тумблер, чтобы повторить',
+        stoppedThis: 'Остановлено в этой беседе',
+        noRun: 'Автоматических запусков пока не было',
+        runOne: 'запуск',
+        runMany: 'запусков',
+        autoRuns: 'Автоматические запуски',
+        state: 'Состояние',
+        active: 'Активно',
+        offManual: 'Выключено (вручную)',
+        judgeTime: 'Время выбора',
+        cost: 'Стоимость',
+        conversations: 'Беседы',
+        status: 'Статус',
+        working: 'Работает',
+        notWorking: 'Не работает — обновите плагин или DSH',
+        priceWindow: 'Ценовой период',
+        peak: 'Пиковый',
+        offPeak: 'Ночной',
+        countedNote: 'Считается с момента запуска DSH.',
+        resume: 'Включить снова',
+        dismiss: 'Закрыть',
+        seconds: ' с',
+        bannerThinking: 'Автоматическое усилие приостановлено: в этой беседе произошла ошибка.',
+        bannerTimeout: 'Автоматический выбор приостановлен: ответа нет в течение 3 секунд.',
+        bannerBusy: 'Автоматический выбор приостановлен: сервис ограничивает запросы.',
+        bannerServer: 'Автоматический выбор приостановлен: сервис вернул ошибку.',
+        bannerNetwork: 'Автоматический выбор приостановлен: сеть недоступна.',
+        bannerNoAnswer: 'Автоматический выбор приостановлен: в ответе не было off/low/high/max.',
+        bannerNotAllowed: 'Автоматический выбор приостановлен: ответ — уровень, который вы отключили.',
+        bannerUnsupported: 'Автоматический выбор приостановлен: эта модель не поддерживает такой уровень.',
+        bannerHostDown: 'Автоматический выбор приостановлен: сервис модели был недоступен.',
+        bannerUnknown: 'Автоматический выбор приостановлен: произошла ошибка.',
+        bannerFailures: 'Автоматический выбор приостановлен после повторных ошибок.',
+      },
+      pt: {
+        rowLabel: 'Esforço automático',
+        stoppedFailures: 'Parado após várias falhas — alterne o interruptor para tentar de novo',
+        stoppedThis: 'Parado nesta conversa',
+        noRun: 'Ainda não houve execução automática',
+        runOne: 'execução',
+        runMany: 'execuções',
+        autoRuns: 'Execuções automáticas',
+        state: 'Estado',
+        active: 'Ativo',
+        offManual: 'Desligado (manual)',
+        judgeTime: 'Tempo de seleção',
+        cost: 'Custo',
+        conversations: 'Conversas',
+        status: 'Status',
+        working: 'Funcionando',
+        notWorking: 'Não está funcionando — atualize o plug-in ou o DSH',
+        priceWindow: 'Faixa de preço',
+        peak: 'Pico',
+        offPeak: 'Fora de pico',
+        countedNote: 'Contado desde que o DSH iniciou.',
+        resume: 'Ligar de novo',
+        dismiss: 'Fechar',
+        seconds: ' s',
+        bannerThinking: 'Esforço automático pausado: esta conversa deu erro.',
+        bannerTimeout: 'Seleção pausada: sem resposta em 3 segundos.',
+        bannerBusy: 'Seleção pausada: o serviço está limitando as requisições.',
+        bannerServer: 'Seleção pausada: o serviço retornou um erro.',
+        bannerNetwork: 'Seleção pausada: a rede está inacessível.',
+        bannerNoAnswer: 'Seleção pausada: a resposta não trazia off/low/high/max.',
+        bannerNotAllowed: 'Seleção pausada: a resposta era um nível que você desativou.',
+        bannerUnsupported: 'Seleção pausada: este modelo não suporta esse nível.',
+        bannerHostDown: 'Seleção pausada: o serviço do modelo estava indisponível.',
+        bannerUnknown: 'Seleção pausada: ocorreu um erro.',
+        bannerFailures: 'Seleção pausada após várias falhas.',
+      },
     }
 
+    /** The interface language in use right now. */
+    let activeLang = 'en'
+    /** Longest-prefix match: zh-TW and zh-CN both mean zh. */
+    function pickLang(raw) {
+      const value = String(raw ?? '').toLowerCase()
+      return LANGS.find(code => value === code || value.startsWith(code + '-')) ?? 'en'
+    }
+    function guessLang() {
+      const fromDocument = document?.documentElement?.lang
+      if (typeof fromDocument === 'string' && fromDocument !== '') return pickLang(fromDocument)
+      const fromNavigator = navigator?.language
+      if (typeof fromNavigator === 'string' && fromNavigator !== '') return pickLang(fromNavigator)
+      return 'en'
+    }
+    function lang() {
+      return activeLang
+    }
+    function t(key) {
+      const dict = S[activeLang] ?? S.en
+      return dict[key] ?? S.en[key] ?? key
+    }
     function rowLabel() {
-      return isEnglish() ? 'Auto-select effort' : '自动选择推理等级'
+      return t('rowLabel')
+    }
+
+    /** Every mounted piece of UI re-renders when the interface language changes. */
+    const langListeners = new Set()
+    function notifyLang() {
+      for (const fn of langListeners) {
+        try {
+          fn()
+        } catch {
+          // One broken listener must not stop the others.
+        }
+      }
+    }
+    function useLang() {
+      const [, bump] = React.useState(0)
+      React.useEffect(() => {
+        const fn = () => bump(value => value + 1)
+        langListeners.add(fn)
+        return () => {
+          langListeners.delete(fn)
+        }
+      }, [])
+      return activeLang
+    }
+    /**
+     * Follow the host's `locale` service: it knows which language the interface
+     * is in, and it tells us when the user switches. Without it (an older host)
+     * the page's own language is the best guess.
+     */
+    function followLang(ctx) {
+      const svc = ctx.get?.('locale')
+      const read = () => {
+        try {
+          const next = pickLang(svc?.getSnapshot?.()?.active ?? guessLang())
+          if (next !== activeLang) {
+            activeLang = next
+            notifyLang()
+          }
+        } catch {
+          // Keep whatever we have.
+        }
+      }
+      read()
+      if (typeof svc?.subscribe === 'function') return svc.subscribe(read)
+      return undefined
     }
 
     // ---- the cost sidecar -------------------------------------------------
 
     let basePromise = null
+
+    /** A port that accepted the connection but never answers would hang everything. */
+    const PROBE_TIMEOUT_MS = 1500
+    const READ_TIMEOUT_MS = 2000
+    const WRITE_TIMEOUT_MS = 3000
+
+    function forgetBase() { basePromise = null }
+
+    /** Older kernels have no AbortSignal.timeout: fall back to no deadline. */
+    function deadline(ms) {
+      try {
+        return typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(ms) : undefined
+      } catch {
+        return undefined
+      }
+    }
+
     function statsBase() {
       if (basePromise === null) {
         // A failed probe must not be cached for the life of the page: the page can
@@ -59,7 +440,10 @@ window.__ModuleLoader__.load({
     async function probe() {
       for (const port of PORTS) {
         try {
-          const response = await fetch(`http://127.0.0.1:${port}/health`, { cache: 'no-store' })
+          const response = await fetch(`http://127.0.0.1:${port}/health`, {
+            cache: 'no-store',
+            signal: deadline(PROBE_TIMEOUT_MS),
+          })
           if (!response.ok) continue
           const body = await response.json()
           if (body?.name === 'dsh-auto-effort') return `http://127.0.0.1:${port}`
@@ -74,9 +458,15 @@ window.__ModuleLoader__.load({
       const base = await statsBase()
       if (base === null) return null
       try {
-        const response = await fetch(`${base}${path}`, { cache: 'no-store' })
+        const response = await fetch(`${base}${path}`, {
+          cache: 'no-store',
+          signal: deadline(READ_TIMEOUT_MS),
+        })
         return response.ok ? await response.json() : null
       } catch {
+        // The remembered port stopped answering: the sidecar probably moved.
+        // Probe again on the next tick instead of waiting for a page reload.
+        forgetBase()
         return null
       }
     }
@@ -93,9 +483,11 @@ window.__ModuleLoader__.load({
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ session: sessionId, on }),
+          signal: deadline(WRITE_TIMEOUT_MS),
         })
         return response.ok ? await response.json() : null
       } catch {
+        forgetBase()
         return null
       }
     }
@@ -118,15 +510,18 @@ window.__ModuleLoader__.load({
     let lastSessionId = ''
 
     function money(stats) {
-      const value = Number(isEnglish() ? stats?.usd : stats?.cny) || 0
-      const symbol = isEnglish() ? '$' : '¥'
+      // The Chinese interface shows DeepSeek's CNY price list; every other one
+      // shows the USD list. Never convert between them.
+      const cny = lang() === 'zh'
+      const value = Number(cny ? stats?.cny : stats?.usd) || 0
+      const symbol = cny ? '¥' : '$'
       return value >= 0.01 ? `${symbol}${value.toFixed(2)}` : `${symbol}${value.toFixed(4)}`
     }
 
     function duration(ms) {
       const seconds = (Number(ms) || 0) / 1000
-      if (seconds >= 10) return `${seconds.toFixed(0)}${isEnglish() ? ' s' : ' 秒'}`
-      return `${seconds.toFixed(1)}${isEnglish() ? ' s' : ' 秒'}`
+      if (seconds >= 10) return `${seconds.toFixed(0)}${t('seconds')}`
+      return `${seconds.toFixed(1)}${t('seconds')}`
     }
 
     function summaryLine(stats) {
@@ -135,17 +530,10 @@ window.__ModuleLoader__.load({
       // off by a manual pick. Say so instead of showing a stale number — but keep
       // the numbers this conversation already spent.
       const count = Number(stats?.count) || 0
-      if (stats?.status?.tripped === true) {
-        return isEnglish() ? 'Stopped after repeated failures — toggle the switch to retry' : '连续失败，已停止 —— 关一下开关再打开可恢复'
-      }
-      if (stats?.status?.auto === false) {
-        return isEnglish() ? 'Stopped for this conversation' : '本对话已停止'
-      }
-      if (count === 0) return isEnglish() ? 'No auto run yet' : '还没有自动触发'
-      if (isEnglish()) {
-        return `${count} run${count === 1 ? '' : 's'} · ${money(stats)} · ${duration(stats.ms)}`
-      }
-      return `${count} 次 · ${money(stats)} · ${duration(stats.ms)}`
+      if (stats?.status?.tripped === true) return t('stoppedFailures')
+      if (stats?.status?.auto === false) return t('stoppedThis')
+      if (count === 0) return t('noRun')
+      return `${count} ${t(count === 1 ? 'runOne' : 'runMany')} · ${money(stats)} · ${duration(stats.ms)}`
     }
 
     /** Poll one endpoint while mounted; the menu is short-lived, so 2 s is enough. */
@@ -154,9 +542,20 @@ window.__ModuleLoader__.load({
       React.useEffect(() => {
         if (!path) return undefined
         let alive = true
+        let inFlight = false
+        // A new conversation must not be shown the previous one's numbers, even
+        // for the second before the first answer arrives.
+        setStats(null)
         const tick = async () => {
-          const next = await readStats(path)
-          if (alive && next !== null) setStats(next)
+          // A hung request must not stack another one behind it every 2 s.
+          if (inFlight) return
+          inFlight = true
+          try {
+            const next = await readStats(path)
+            if (alive && next !== null) setStats(next)
+          } finally {
+            inFlight = false
+          }
         }
         tick()
         const timer = setInterval(tick, intervalMs)
@@ -187,8 +586,13 @@ window.__ModuleLoader__.load({
       const [pending, setPending] = React.useState(false)
       const [hover, setHover] = React.useState(false)
       const [confirmed, setConfirmed] = React.useState(null)
+      useLang()
       const sessionId = typeof props?.sessionId === 'string' ? props.sessionId : ''
-      if (sessionId !== '') lastSessionId = sessionId
+      // Written in an effect, not during render: a render that never commits must
+      // not decide which conversation the level watcher will act on.
+      React.useEffect(() => {
+        if (sessionId !== '') lastSessionId = sessionId
+      }, [sessionId])
       const stats = useStats(sessionId ? `/stats?session=${encodeURIComponent(sessionId)}` : '')
 
       React.useEffect(() => {
@@ -329,6 +733,7 @@ window.__ModuleLoader__.load({
     }
 
     function CostPanel(ctx, props) {
+      useLang()
       const totals = useStats('/totals', 5000)
       const health = useStats('/health', 15000)
       if (props?.view === 'summary') {
@@ -337,37 +742,32 @@ window.__ModuleLoader__.load({
           'div',
           { style: { fontSize: 12, color: 'var(--dsw-alias-text-secondary, rgba(128,128,128,0.95))' } },
           count === 0
-            ? (isEnglish() ? 'No auto run yet' : '还没有自动触发过')
-            : `${count} ${isEnglish() ? (count === 1 ? 'run' : 'runs') : '次'} · ${money(totals)} · ${duration(totals.ms)}`,
+            ? t('noRun')
+            : `${count} ${t(count === 1 ? 'runOne' : 'runMany')} · ${money(totals)} · ${duration(totals.ms)}`,
         )
       }
       const count = Number(totals?.count) || 0
       const conversations = Number(totals?.conversations) || 0
       const peak = totals?.peak === true
+      // "No answer yet" is not "zero": a panel that shows 0 runs and 0.0000 next
+      // to "Working" while the sidecar is unreachable is simply lying.
+      const dash = '—'
+      const status = health === null
+        ? dash
+        : (health.compatible === false ? t('notWorking') : t('working'))
       return h(
         'div',
         { style: { display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0', minWidth: 260 } },
-        StatRow(isEnglish() ? 'Auto runs' : '自动触发次数', String(count)),
-        totals?.status !== undefined && totals.status !== null
-          ? StatRow(isEnglish() ? 'State' : '状态', totals.status.tripped === true
-            ? (isEnglish() ? 'Stopped after repeated failures' : '连续失败，已停止')
-            : (totals.status.auto === true ? (isEnglish() ? 'Active' : '自动中') : (isEnglish() ? 'Off (manual)' : '已停止（手动）')))
-          : null,
-        StatRow(isEnglish() ? 'Judging time' : '判断累计用时', duration(totals?.ms)),
-        StatRow(isEnglish() ? 'Cost' : '累计花费', money(totals)),
-        StatRow(isEnglish() ? 'Conversations' : '涉及对话', String(conversations)),
-        StatRow(isEnglish() ? 'Status' : '状态', health?.compatible === false
-          ? (isEnglish() ? 'Not working — update the plugin or DSH' : '暂时用不了 —— 请更新插件或 DSH')
-          : (isEnglish() ? 'Working' : '正常工作')),
-        StatRow(isEnglish() ? 'Price window' : '当前价格时段', peak
-          ? (isEnglish() ? 'Peak' : '高峰')
-          : (isEnglish() ? 'Off-peak' : '空闲')),
+        StatRow(t('autoRuns'), totals === null ? dash : String(count)),
+        StatRow(t('judgeTime'), totals === null ? dash : duration(totals.ms)),
+        StatRow(t('cost'), totals === null ? dash : money(totals)),
+        StatRow(t('conversations'), totals === null ? dash : String(conversations)),
+        StatRow(t('status'), status),
+        StatRow(t('priceWindow'), totals === null ? dash : (peak ? t('peak') : t('offPeak'))),
         h(
           'div',
           { style: { fontSize: 11, lineHeight: '15px', marginTop: 4, color: 'var(--dsw-alias-text-secondary, rgba(128,128,128,0.95))' } },
-          isEnglish()
-            ? 'Counted since DSH started. The card update runs in the background and is included in the cost.'
-            : '从 DSH 启动起累计。便签更新在后台运行，其费用也计入其中。',
+          t('countedNote'),
         ),
       )
     }
@@ -382,25 +782,24 @@ window.__ModuleLoader__.load({
      * What actually went wrong, in the user's words. A count tells nobody
      * anything, so the banner names the cause the host reported last.
      */
-    const BANNER_TEXT = {
-      thinking: ['自动选择推理等级已暂停：这个对话出错了。', 'Auto-select effort is paused: this conversation hit an error.'],
-      timeout: ['自动选择已暂停：3 秒内没等到结果。', 'Auto-select is paused: no answer within 3 seconds.'],
-      busy: ['自动选择已暂停：服务太忙，被限流了。', 'Auto-select is paused: the service is rate-limiting requests.'],
-      server: ['自动选择已暂停：服务端临时出错。', 'Auto-select is paused: the service returned an error.'],
-      network: ['自动选择已暂停：网络连不上。', 'Auto-select is paused: the network is unreachable.'],
-      noAnswer: ['自动选择已暂停：模型没按要求回答，缺 off/low/high/max。', 'Auto-select is paused: the reply did not name off/low/high/max.'],
-      notAllowed: ['自动选择已暂停：选出的等级不在你允许的范围里。', 'Auto-select is paused: the answer was a level you turned off.'],
-      unsupported: ['自动选择已暂停：当前模型不支持这个等级。', 'Auto-select is paused: this model does not support that level.'],
-      hostDown: ['自动选择已暂停：插件拿不到模型服务。', 'Auto-select is paused: the model service was unavailable.'],
-      unknown: ['自动选择已暂停：出错了。', 'Auto-select is paused: it hit an error.'],
-      failures: ['自动选择已暂停：连续失败。', 'Auto-select is paused after repeated failures.'],
+    const BANNER_KEYS = {
+      thinking: 'bannerThinking',
+      timeout: 'bannerTimeout',
+      busy: 'bannerBusy',
+      server: 'bannerServer',
+      network: 'bannerNetwork',
+      noAnswer: 'bannerNoAnswer',
+      notAllowed: 'bannerNotAllowed',
+      unsupported: 'bannerUnsupported',
+      hostDown: 'bannerHostDown',
+      unknown: 'bannerUnknown',
+      failures: 'bannerFailures',
     }
 
     /** The line the banner shows for one status snapshot. */
     function bannerText(status) {
       const cause = status?.cause === 'thinking' ? 'thinking' : (status?.failCause ?? 'failures')
-      const pair = BANNER_TEXT[cause] ?? BANNER_TEXT.unknown
-      return isEnglish() ? pair[1] : pair[0]
+      return t(BANNER_KEYS[cause] ?? BANNER_KEYS.unknown)
     }
 
     const bannerButton = {
@@ -437,6 +836,7 @@ window.__ModuleLoader__.load({
      * It stays until the user acts on it: reopen, or dismiss for this conversation.
      */
     function PausedBanner(ctx, props) {
+      useLang()
       const sessionId = typeof props?.sessionId === 'string' ? props.sessionId : ''
       const stats = useStats(sessionId ? `/stats?session=${encodeURIComponent(sessionId)}` : '', 2000)
       const [dismissed, setDismissed] = React.useState(false)
@@ -498,14 +898,14 @@ window.__ModuleLoader__.load({
           { style: { flex: '1 1 auto' } },
           text,
         ),
-        h('button', { type: 'button', onClick: resume, style: bannerButton }, isEnglish() ? 'Turn it back on' : '重新打开'),
+        h('button', { type: 'button', onClick: resume, style: bannerButton }, t('resume')),
         h(
           'button',
           {
             type: 'button',
             onClick: shut,
-            title: isEnglish() ? 'Dismiss' : '关闭提示',
-            'aria-label': isEnglish() ? 'Dismiss' : '关闭提示',
+            title: t('dismiss'),
+            'aria-label': t('dismiss'),
             style: bannerClose,
           },
           '×',
@@ -548,7 +948,7 @@ window.__ModuleLoader__.load({
     }
 
     return {
-      inject: ['slots', 'configForms'],
+      inject: ['slots', 'configForms', 'locale'],
       apply(ctx) {
         ctx.slots.inject('conversation.input.model.options', () =>
           ctx.slots.register(
@@ -570,6 +970,8 @@ window.__ModuleLoader__.load({
         )
         if (typeof ctx.effect === 'function') ctx.effect(() => watchLevelPicks(ctx), 'auto-effort: level pick watcher')
         else watchLevelPicks(ctx)
+        if (typeof ctx.effect === 'function') ctx.effect(() => followLang(ctx), 'auto-effort: interface language')
+        else followLang(ctx)
       },
     }
   },

@@ -15,6 +15,20 @@ import { sessionStats, sessionStatus, totalStats, isPeak } from './stats.js'
 
 const MAX_BODY = 8 * 1024
 
+/**
+ * The browser may name a conversation `session-<id>` while the host keys it as
+ * `<id>`, or the other way round. `/switch` already coped with both; reads did
+ * not, so the menu silently showed nothing for half the conversations.
+ * @param {string} raw
+ * @returns {string}
+ */
+function resolveSessionId(raw) {
+  if (raw === '') return raw
+  if (sessionStatus(raw) !== undefined) return raw
+  const alternative = raw.startsWith('session-') ? raw.slice('session-'.length) : `session-${raw}`
+  return sessionStatus(alternative) !== undefined ? alternative : raw
+}
+
 function readBody(request, response, done) {
   let body = ''
   let settled = false
@@ -198,7 +212,7 @@ function listen(port) {
           return send(response, 200, { ok: true, name: 'dsh-auto-effort', peak: isPeak(), compatible: problems.length === 0, problems })
         }
         if (url.pathname === '/stats') {
-          const session = url.searchParams.get('session') ?? ''
+          const session = resolveSessionId(url.searchParams.get('session') ?? '')
           return send(response, 200, { ...sessionStats(session), status: sessionStatus(session) ?? null, peak: isPeak() })
         }
         if (url.pathname === '/beacon') {

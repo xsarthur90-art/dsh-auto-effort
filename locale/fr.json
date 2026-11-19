@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Effort automatique",
+    "description": "Après chaque message que vous envoyez, DeepSeek choisit l'effort de raisonnement : off / low / high / max. Les conversations déjà ouvertes au chargement du plugin démarrent après un redémarrage de DSH ; les sous-agents ne sont jamais évalués. Ajoute environ 0,7 s par message. Désactiver le plugin l'arrête complètement ; choisir un niveau à la main désactive le plugin.",
+    "detail": "docs/DETAIL.fr.md"
+  }
+}
