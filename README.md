@@ -6,7 +6,7 @@ Stop picking an effort. Install it once and **DeepSeek picks it for every messag
 
 ## Cheaper, faster, more relaxed — cost in sight, switch anytime
 
-![The model menu with the Auto-select effort row](https://cdn.jsdelivr.net/npm/dsh-auto-effort@latest/docs/menu-en.png)
+![The model menu with the Auto-select effort row](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.2/docs/menu-en.png)
 
 - **Cheaper**: picking an effort by hand usually means picking wrong — too low means rework and more spend, too high burns tokens. Auto costs only about `$0.0002` extra per message off-peak, about `$0.0004` at peak.
 - **Faster**: picking by hand takes two clicks and 2–3 s; a too-low pick means redoing the work, a too-high one wastes reasoning time. Auto adds only about **0.7 s** per message.
@@ -14,11 +14,11 @@ Stop picking an effort. Install it once and **DeepSeek picks it for every messag
 - **Cost in sight**: the menu row shows this conversation's runs, cost and judging time, and the plugin page keeps a running total.
 - **Switch anytime**: turn it off whenever you do not want it, on when you do.
 
-![The plugin page, with the running totals](https://cdn.jsdelivr.net/npm/dsh-auto-effort@latest/docs/plugin-page-en.png)
+![The plugin page, with the running totals](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.2/docs/plugin-page-en.png)
 
 ## 省钱、省时间、省心，花费可见，随时开关
 
-![模型菜单里的「自动选择推理等级」](https://cdn.jsdelivr.net/npm/dsh-auto-effort@latest/docs/menu-zh.png)
+![模型菜单里的「自动选择推理等级」](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.2/docs/menu-zh.png)
 
 - **省钱**：手动选推理等级，选低了要返工、更花钱，选高了白烧 token。自动选择每条消息只多花约 ¥0.0013（繁忙时段翻倍）。
 - **省时间**：手动选等级要点两下、花 2–3 秒，选低了还得重来，选高了浪费推理时间。自动选择只多等约 0.7 秒。
@@ -26,7 +26,7 @@ Stop picking an effort. Install it once and **DeepSeek picks it for every messag
 - **花费可见**：菜单那一行直接写着本对话触发了几次、花了多少、等了多久；插件页里是累计总数。
 - **随时开关**：不想用就一键关掉；想用了再打开。
 
-![插件页里的累计总数](https://cdn.jsdelivr.net/npm/dsh-auto-effort@latest/docs/plugin-page-zh.png)
+![插件页里的累计总数](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.2/docs/plugin-page-zh.png)
 
 ## How it judges
 

@@ -1,6 +1,6 @@
 {
   "name": "dsh-auto-effort",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Per-turn reasoning effort picker for DeepSeek Harness: keeps a short task card and lets DeepSeek pick off/low/high/max for every message, in the same turn.",
   "type": "module",
   "license": "MIT",
