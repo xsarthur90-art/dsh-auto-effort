@@ -62,6 +62,12 @@ export function stateOf(agent, config) {
       /** True from the first step of a turn until that turn stops. */
       running: false,
       /**
+       * Abort signal of the turn running now. Pressing Stop aborts it and fires
+       * no `turn-stopping`, so the signal is what tells this plugin that a turn
+       * is over; without it a held message would wait behind a dead turn.
+       */
+      turnSignal: /** @type {AbortSignal | null} */ (null),
+      /**
        * The task card: at most a couple of lines saying what the conversation is
        * doing and what is left. It is the only cross-turn context the judge sees.
        */

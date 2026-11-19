@@ -282,4 +282,42 @@ function makeAgent(id, origin, effort = 'high') {
   assert.equal(status.cause, 'failures')
   assert.equal(status.failCause, 'timeout', 'the banner can say what actually failed')
 }
+// 15. Pressing Stop fires no `turn-stopping`; the turn's abort signal has to
+// release a held message, or the conversation goes quiet for good.
+{
+  const ctx = makeCtx({ answer: 'high' })
+  apply(ctx, {})
+  const { agent, inserted } = makeAgent('o')
+  ctx.emit('agent/created', { agent })
+  await agent.followup(userMessage('start a turn'))
+  const stop = new AbortController()
+  ctx.emit('agent/pre-step', { agent, step: 1, turn: 1, signal: stop.signal })
+
+  const held = await agent.followup(userMessage('typed after pressing stop'))
+  assert.equal(held, undefined, 'while the turn runs the message waits')
+  assert.equal(inserted.length, 1)
+
+  stop.abort()
+  await tick()
+  assert.equal(inserted.length, 2, 'stopping the turn releases the message')
+  assert.equal(inserted.at(-1).content[0].text, 'typed after pressing stop')
+}
+
+// 16. A message that arrives after the stop but before anything noticed is sent,
+// not held behind a turn that will never stop.
+{
+  const ctx = makeCtx({ answer: 'high' })
+  apply(ctx, {})
+  const { agent, inserted } = makeAgent('p')
+  ctx.emit('agent/created', { agent })
+  await agent.followup(userMessage('start a turn'))
+  const stop = new AbortController()
+  ctx.emit('agent/pre-step', { agent, step: 1, turn: 1, signal: stop.signal })
+  stop.abort()
+  await agent.followup(userMessage('sent right after the stop'))
+  await tick()
+  assert.equal(inserted.length, 2, 'the message is not held behind a stopped turn')
+  assert.equal(inserted.at(-1).content[0].text, 'sent right after the stop')
+}
+
 console.log('auto-effort wiring checks: OK')

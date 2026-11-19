@@ -544,6 +544,12 @@ function attach(ctx, agent, config, logger) {
           }
           return original.call(agent, message, ...rest)
         }
+        if (state.running && state.turnSignal?.aborted === true) {
+          // The turn was stopped while this message was on its way to the queue.
+          // There is nothing left to wait for, so send it as a new turn.
+          state.running = false
+          logger.info('the turn had already been stopped; sending the message instead of holding it')
+        }
         if (state.running) {
           if (method === 'steer') {
             // "Steer" hands the message to the turn already running, so it keeps
@@ -760,7 +766,30 @@ export function apply(ctx, rawConfig) {
       logger.debug(`pre-step turn=${payload?.turn} step=${payload?.step} current=${String(payload?.agent?.model?.current?.()?.reasoningEffort)} auto=${String(stateOf(payload?.agent, config).auto)}`)
       const runningAgent = payload?.agent
       if (runningAgent !== null && typeof runningAgent === 'object') {
-        stateOf(runningAgent, config).running = true
+        const state = stateOf(runningAgent, config)
+        state.running = true
+        // Pressing Stop aborts the turn's signal and fires no `turn-stopping`.
+        // Watch the signal, or a held message waits behind a turn that is already
+        // dead and the conversation goes quiet.
+        const signal = payload?.signal
+        if (signal !== null && typeof signal === 'object' && typeof signal.addEventListener === 'function' && state.turnSignal !== signal) {
+          state.turnSignal = signal
+          signal.addEventListener('abort', () => {
+            try {
+              state.running = false
+              logger.info('the running turn was stopped; any held message can go now')
+              setImmediate(() => {
+                try {
+                  flushHeld(ctx, runningAgent, state, config, logger)
+                } catch {
+                  /* never throw out of a host hook */
+                }
+              })
+            } catch {
+              /* best effort */
+            }
+          }, { once: true })
+        }
         const sid = sessionIdOf(runningAgent)
         if (sid !== '') agentsBySession.set(sid, runningAgent)
       }
