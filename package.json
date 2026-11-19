@@ -1,6 +1,6 @@
 {
   "name": "dsh-auto-effort",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Per-turn reasoning effort picker for DeepSeek Harness: keeps a short task card and lets DeepSeek pick off/low/high/max for every message, in the same turn.",
   "type": "module",
   "license": "MIT",
@@ -20,6 +20,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xsarthur90-art/dsh-auto-effort.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xsarthur90-art/dsh-auto-effort/issues"
+  },
+  "homepage": "https://github.com/xsarthur90-art/dsh-auto-effort#readme",
   "scripts": {
     "test": "node test/auto-effort.mjs && node test/auto-effort-wiring.mjs && node test/auto-effort-sidecar.mjs"
   },
