@@ -1,0 +1,27 @@
+name: Feature request
+description: An idea for how the plugin should behave
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is awkward today
+      description: Describe the situation, not the solution — the solution usually falls out of the situation.
+      placeholder: |
+        Every time I switch model the plugin forgets the card, so the first message
+        after the switch is judged without any context.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you would like instead
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: This is about the plugin, not about DSH itself
+          required: true

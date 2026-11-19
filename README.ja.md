@@ -13,6 +13,8 @@
 
 もう強度は選ばなくていい。一度入れるだけで、**DeepSeek がメッセージごとに選びます**。
 
+うまく動かないときは [issue を作成](https://github.com/xsarthur90-art/dsh-auto-effort/issues/new/choose) してください。プラグインのバージョンと `~/.dsh/auto-effort.log` の最後の数行を添えてください。
+
 ## 安く、速く、気楽に — コストが見えて、いつでも切り替え
 
 ![モデルメニューの「強度の自動選択」行](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/menu-ja.png)

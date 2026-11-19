@@ -13,6 +13,8 @@
 
 Deja de elegir un esfuerzo. Instálalo una vez y **DeepSeek elegirá uno por cada mensaje**.
 
+¿Algo no funciona? [Abre un issue](https://github.com/xsarthur90-art/dsh-auto-effort/issues/new/choose) e incluye la versión del complemento y las últimas líneas de `~/.dsh/auto-effort.log`.
+
 ## Más barato, más rápido, más tranquilo: coste a la vista, cámbialo cuando quieras
 
 ![El menú del modelo con la fila Esfuerzo automático](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/menu-es.png)

@@ -13,6 +13,8 @@
 
 不用再选推理等级。装一次，之后每条消息都**由 DeepSeek 替你自动选择**推理等级。
 
+出问题了？[提个 issue](https://github.com/xsarthur90-art/dsh-auto-effort/issues/new/choose)，附上插件版本号，和 `~/.dsh/auto-effort.log` 里最后几行。
+
 ## 省钱、省时间、省心，花费可见，随时开关
 
 ![模型菜单里的「自动选择推理等级」](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/menu-zh.png)

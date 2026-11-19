@@ -13,6 +13,8 @@
 
 Stop picking an effort. Install it once and **DeepSeek picks it for every message**.
 
+Something broken? [Open an issue](https://github.com/xsarthur90-art/dsh-auto-effort/issues/new/choose) — include the plugin version and the last lines of `~/.dsh/auto-effort.log`.
+
 ## Cheaper, faster, more relaxed — cost in sight, switch anytime
 
 ![The model menu with the Auto-select effort row](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/menu-en.png)

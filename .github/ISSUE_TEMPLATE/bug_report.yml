@@ -1,0 +1,69 @@
+name: Bug report
+description: Something did not work the way the README says it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Two things make a fix much faster: the versions, and the last lines of the log.
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: Shown next to the plugin name on the Plugins page, and by `npm ls dsh-auto-effort`.
+      placeholder: 0.2.5
+    validations:
+      required: true
+  - type: input
+    id: dsh-version
+    attributes:
+      label: DSH version
+      description: Settings → About, or the version in the window title.
+      placeholder: 0.2.2-rc.5
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+      placeholder: |
+        I stopped a turn in the middle of the answer, then typed a new message.
+        Expected: the plugin judges it and answers.
+        Instead: nothing happened, no answer at all.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: |
+        The plugin writes to `~/.dsh/auto-effort.log`. Paste the last 20–30 lines
+        around the moment it went wrong. Set `debug: true` in the plugin settings
+        and reproduce once if you can — that logs the raw judge output.
+      render: text
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - The level it picked was wrong
+        - The switch in the model menu
+        - The plugin page and its numbers
+        - A message was swallowed / no answer
+        - Install, update or restart
+        - Interface language
+        - Something else
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I restarted DSH after installing or updating the plugin
+          required: true
+        - label: I read the "If nothing happens" section of the README
+          required: true

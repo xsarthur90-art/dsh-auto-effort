@@ -13,6 +13,8 @@
 
 Schluss mit dem Auswählen des Aufwands. Einmal installieren, und **DeepSeek wählt ihn für jede Nachricht**.
 
+Etwas kaputt? [Issue öffnen](https://github.com/xsarthur90-art/dsh-auto-effort/issues/new/choose) — bitte mit Plugin-Version und den letzten Zeilen aus `~/.dsh/auto-effort.log`.
+
 ## Günstiger, schneller, entspannter — Kosten im Blick, jederzeit umschalten
 
 ![Das Modellmenü mit der Zeile „Aufwand automatisch wählen“](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/menu-de.png)
