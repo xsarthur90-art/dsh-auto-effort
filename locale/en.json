@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Automatic effort",
+    "description": "Picks the reasoning effort for every user message with one tiny extra call (one word out) and applies it to that same turn. Conversations already open when the bundle loads start after DSH restarts; subagent runs are never judged. Adds about 0.7 s per message. Turn the plugin off to stop it; the level you chose by hand is kept.",
+    "detail": "docs/DETAIL.md"
+  }
+}

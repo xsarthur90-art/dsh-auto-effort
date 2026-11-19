@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="320" viewBox="0 0 1000 320" role="img" aria-label="Your message plus a task card, judged into one effort">
+  <style>
+    .t { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; }
+    .lbl { font-size: 15px; fill: #8a93a3; }
+    .body { font-size: 18px; fill: #1f2430; }
+    .chip { font-size: 16px; fill: #5b6472; }
+    .chipOn { font-size: 16px; fill: #0b57c2; font-weight: 600; }
+  </style>
+
+  <text class="t lbl" x="40" y="46">Your message</text>
+  <path d="M56 70 h288 a18 18 0 0 1 18 18 v86 a18 18 0 0 1 -18 18 h-244 l-30 26 v-26 h-14 a18 18 0 0 1 -18 -18 v-86 a18 18 0 0 1 18 -18 z"
+        fill="#ffffff" stroke="#cfd6e4" stroke-width="2"/>
+  <text class="t body" x="78" y="118">Shorten section 3 of the README</text>
+  <text class="t body" x="78" y="152">and check the pricing section</text>
+
+  <text class="t lbl" x="404" y="46">Task card (max 120 chars)</text>
+  <rect x="404" y="66" width="196" height="128" rx="14" fill="#fbfaf5" stroke="#e6dfc8" stroke-width="2"/>
+  <text class="t body" x="426" y="106">Editing README</text>
+  <text class="t body" x="426" y="140">3 sections left</text>
+  <text class="t lbl" x="426" y="172">pricing: done</text>
+
+  <path d="M330 130 h48" stroke="#b9c2d2" stroke-width="2"/>
+  <path d="M370 124 l10 6 -10 6" fill="none" stroke="#b9c2d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <path d="M614 130 h44" stroke="#b9c2d2" stroke-width="2"/>
+  <path d="M650 124 l10 6 -10 6" fill="none" stroke="#b9c2d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="674" y="90" width="96" height="80" rx="16" fill="#eef4ff" stroke="#c9dbff" stroke-width="2"/>
+  <text class="t body" x="698" y="137">Judge</text>
+
+  <path d="M786 130 h48" stroke="#b9c2d2" stroke-width="2"/>
+  <path d="M826 124 l10 6 -10 6" fill="none" stroke="#b9c2d2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="852" y="54" width="112" height="34" rx="17" fill="#ffffff" stroke="#dbe2ee" stroke-width="2"/>
+  <text class="t chip" x="884" y="76">off</text>
+  <rect x="852" y="96" width="112" height="34" rx="17" fill="#ffffff" stroke="#dbe2ee" stroke-width="2"/>
+  <text class="t chip" x="884" y="118">low</text>
+  <rect x="848" y="138" width="120" height="34" rx="17" fill="#eaf1ff" stroke="#9dbcff" stroke-width="2"/>
+  <text class="t chipOn" x="866" y="160">high picked</text>
+  <rect x="852" y="180" width="112" height="34" rx="17" fill="#ffffff" stroke="#dbe2ee" stroke-width="2"/>
+  <text class="t chip" x="878" y="202">max</text>
+
+  <text class="t lbl" x="40" y="284">The card remembers what the work is and what is left, so "ok, go ahead" is judged by the pending work, not by its own length.</text>
+</svg>

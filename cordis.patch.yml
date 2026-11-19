@@ -1,0 +1,19 @@
+- insert:
+    - id: auto-effort
+      name: 'dsh-auto-effort'
+      config:
+        enabled: true
+        mode: auto
+        levels:
+          - off
+          - low
+          - high
+          - max
+        defaultLevel: null
+        requireMaxForUpgrade: false
+        judgeModel: deepseek-flash
+        timeoutMs: 3000
+        cardInputChars: 600
+        cardMaxChars: 120
+        debug: false
+        logFile: null
