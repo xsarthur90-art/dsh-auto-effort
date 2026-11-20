@@ -52,6 +52,7 @@
     "config.js",
     "state.js",
     "icon.svg",
+    "icon.png",
     "locale",
     "cordis.patch.yml",
     "docs",
