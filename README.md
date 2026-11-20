@@ -27,6 +27,8 @@ Something broken? [Open an issue](https://github.com/xsarthur90-art/dsh-auto-eff
 
 ![The plugin page, with the running totals](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/plugin-page-en.png)
 
+*This is the plugin page — DSH → Plugins → dsh-auto-effort.*
+
 ## How it judges
 
 The plugin plugs into the latest DeepSeek model. It summarises the conversation and keeps a card of at most 120 characters in the background. Every time you send a message it reads that message plus the card, then picks one of the four efforts. The card records what the conversation is doing and what is left, so "ok, go ahead" is judged by the pending work rather than by its own length.

@@ -27,6 +27,8 @@ Deja de elegir un esfuerzo. Instálalo una vez y **DeepSeek elegirá uno por cad
 
 ![La página del complemento, con los totales acumulados](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/plugin-page-es.png)
 
+*Esta es la página del complemento: DSH → Complementos → dsh-auto-effort.*
+
 ## Cómo decide
 
 El complemento se conecta al modelo más reciente de DeepSeek. Resume la conversación y mantiene en segundo plano una ficha de 120 caracteres como máximo. Cada vez que envías un mensaje, lee ese mensaje junto con la ficha y elige uno de los cuatro esfuerzos. La ficha registra qué está haciendo la conversación y qué queda pendiente, de modo que «vale, adelante» se evalúa según el trabajo pendiente y no según su propia longitud.

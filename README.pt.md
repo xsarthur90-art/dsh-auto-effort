@@ -27,6 +27,8 @@ Algo quebrou? [Abra uma issue](https://github.com/xsarthur90-art/dsh-auto-effort
 
 ![A página do plug-in, com os totais acumulados](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/plugin-page-pt.png)
 
+*Esta é a página do plug-in: DSH → Plug-ins → dsh-auto-effort.*
+
 ## Como ele avalia
 
 O plug-in se conecta ao modelo DeepSeek mais recente. Ele resume a conversa e mantém, em segundo plano, uma ficha de no máximo 120 caracteres. A cada mensagem enviada, ele lê essa mensagem junto com a ficha e escolhe um dos quatro esforços. A ficha registra o que a conversa está fazendo e o que falta, então "ok, pode ir" é avaliado pelo trabalho pendente, e não pelo próprio tamanho.

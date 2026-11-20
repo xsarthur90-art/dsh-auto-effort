@@ -27,6 +27,8 @@ Etwas kaputt? [Issue öffnen](https://github.com/xsarthur90-art/dsh-auto-effort/
 
 ![Die Plugin-Seite mit den laufenden Summen](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/plugin-page-de.png)
 
+*Das ist die Plugin-Seite: DSH → Plugins → dsh-auto-effort.*
+
 ## Wie es urteilt
 
 Das Plugin dockt an das neueste DeepSeek-Modell an. Es fasst die Unterhaltung zusammen und hält im Hintergrund eine Karte mit höchstens 120 Zeichen bereit. Jedes Mal, wenn Sie eine Nachricht senden, liest es diese Nachricht plus die Karte und wählt dann einen der vier Aufwände. Die Karte hält fest, was die Unterhaltung gerade tut und was noch offen ist, sodass „ok, mach weiter“ anhand der ausstehenden Arbeit beurteilt wird und nicht anhand seiner eigenen Länge.

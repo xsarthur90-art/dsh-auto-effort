@@ -27,6 +27,8 @@ Quelque chose ne fonctionne pas ? [Ouvrez un ticket](https://github.com/xsarthur
 
 ![La page du plugin, avec les totaux cumulés](https://cdn.jsdelivr.net/npm/dsh-auto-effort@0.2.5/docs/plugin-page-fr.png)
 
+*Voici la page du plugin : DSH → Plugins → dsh-auto-effort.*
+
 ## Comment il décide
 
 Le plugin s'appuie sur le dernier modèle DeepSeek. Il résume la conversation et conserve en arrière-plan une fiche de 120 caractères maximum. Chaque fois que vous envoyez un message, il lit ce message et la fiche, puis choisit l'un des quatre efforts. La fiche consigne ce que fait la conversation et ce qu'il reste à faire : ainsi, « ok, vas-y » est évalué d'après le travail en attente, et non d'après sa propre longueur.
