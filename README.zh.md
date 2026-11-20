@@ -58,10 +58,10 @@
 帮我安装插件 dsh-auto-effort
 ```
 
-**2. 命令行**：
+**2. 命令行**——已经装了 DSH 命令行版的话：
 
 ```
-plugin_manager install_bundle dsh-auto-effort
+dsh plugin --profile web add dsh-auto-effort
 ```
 
 **3. 插件页搜索**：打开侧栏**插件** → 搜索 `dsh-auto-effort` → 点**安装**。

@@ -58,10 +58,10 @@
 プラグイン dsh-auto-effort をインストールして
 ```
 
-**2. コマンドライン**：
+**2. ターミナル**——DSH の CLI を入れている場合：
 
 ```
-plugin_manager install_bundle dsh-auto-effort
+dsh plugin --profile web add dsh-auto-effort
 ```
 
 **3. プラグインのページ** — サイドバーの**プラグイン**を開き、`dsh-auto-effort` を検索して**インストール**をクリックします。

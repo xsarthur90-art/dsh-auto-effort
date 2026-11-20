@@ -58,10 +58,10 @@ Três formas; escolha uma.
 Instale o plug-in dsh-auto-effort
 ```
 
-**2. Linha de comando**:
+**2. Terminal** — com a CLI do DSH instalada:
 
 ```
-plugin_manager install_bundle dsh-auto-effort
+dsh plugin --profile web add dsh-auto-effort
 ```
 
 **3. Página de plug-ins** — abra **Plug-ins** na barra lateral, busque `dsh-auto-effort` e clique em **Instalar**.

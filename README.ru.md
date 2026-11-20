@@ -58,10 +58,10 @@
 Установите плагин dsh-auto-effort
 ```
 
-**2. Командная строка**:
+**2. Терминал** — если установлен CLI DSH:
 
 ```
-plugin_manager install_bundle dsh-auto-effort
+dsh plugin --profile web add dsh-auto-effort
 ```
 
 **3. Страница плагинов** — откройте **Плагины** в боковой панели, найдите `dsh-auto-effort`, нажмите **Установить**.
