@@ -70,7 +70,7 @@ dsh plugin --profile web add dsh-auto-effort
 
 **プラグインをインストールまたは更新したら、DSH を再起動してください。**
 
-後で更新するときは、[CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) で各バージョンの変更点を確認してから DSH を再起動してください。
+更新する前に何が変わったか知りたいときは、[CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) を見てください。
 
 ## オンとオフ
 

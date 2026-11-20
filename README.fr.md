@@ -70,7 +70,7 @@ Une ligne commençant par `+ dsh-auto-effort` signifie que c'est réussi.
 
 **Après avoir installé ou mis à jour le plugin, redémarrez DSH.**
 
-Pour une mise à jour ultérieure, [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) indique ce qui change dans chaque version — à consulter avant de redémarrer DSH.
+Pour voir ce qui change avant de mettre à jour, consultez [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md).
 
 ## L'activer et le désactiver
 

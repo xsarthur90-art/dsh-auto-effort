@@ -70,7 +70,7 @@ Una línea que empiece por `+ dsh-auto-effort` significa que ha funcionado.
 
 **Después de instalar o actualizar el complemento, reinicia DSH.**
 
-¿Vas a actualizar más adelante? [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) dice qué cambia cada versión; conviene mirarlo antes de reiniciar DSH.
+Si quieres ver qué cambió antes de actualizar, consulta [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md).
 
 ## Activarlo y desactivarlo
 

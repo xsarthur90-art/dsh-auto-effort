@@ -70,7 +70,7 @@ dsh plugin --profile web add dsh-auto-effort
 
 **После установки или обновления плагина перезапустите DSH.**
 
-Планируете обновляться позже? В [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md) написано, что меняется в каждой версии, — стоит заглянуть перед перезапуском DSH.
+Если хотите узнать перед обновлением, что изменилось, загляните в [CHANGELOG.md](https://github.com/xsarthur90-art/dsh-auto-effort/blob/main/CHANGELOG.md).
 
 ## Включение и выключение
 
